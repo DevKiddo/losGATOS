@@ -1,3 +1,5 @@
+'use strict'
+
 let FakeDatabase = module.exports = {
 
     data: [],
