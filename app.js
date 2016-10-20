@@ -23,3 +23,4 @@ app.set('view engine', 'handlebars');
 app.use('/', routes);
 
 app.listen(8080);
+console.log('Server started')
