@@ -21,7 +21,7 @@ function Cat(name, age, colors) {
 
 let newCatHandler = function(req, res) {
     let name = catNames[helper.getRandomNum(0, catNames.length - 1)]
-    let age = helper.getRandomNum(0, 18);
+    let age = helper.getRandomNum(0, 25); // cats can live till their early 20s
     let colorArr = [];
     
     /* generates 3 random colors and inserts them into colorArr 
