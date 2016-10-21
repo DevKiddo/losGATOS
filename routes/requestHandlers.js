@@ -47,7 +47,7 @@ let listCatHandler = function(req, res) {
 
 let bycolorCatHandler = function(req, res) {
     let catsByColor = helper.sortAscendingByAge(db.getAll()).filter(function(cat) {
-        return helper.toLowerCaseArray(cat.colors).indexOf(req.params.color) != -1;
+        return helper.toLowerCaseArray(cat.colors).indexOf((req.params.color).toLowerCase()) != -1;
     })
     res.render('sortCat', { cats: catsByColor });
 }
