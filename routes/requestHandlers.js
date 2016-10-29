@@ -1,71 +1,90 @@
 'use strict'
 
-let db = require('../db/fakeDatabase');
-let catData = require('../db/catData');
+let catData = require('../data/catData');
 let helper = require('../routes/helpers');
+let models = require('../models/models.js');
 
 // Data
 
 let catNames = catData.names;
 let catColors = catData.colors;
 
-// Object Constructor
+// models
 
-function Cat(name, age, colors) {
-    this.name = name;
-    this.age = age;
-    this.colors = colors; //colors is an array of colors
-}
+let Cat = models.Cat;
 
-// Creates new Cat object in the db
+// Creates new Cat in the db
 
-let newCatHandler = function(req, res) {
+let newCatHandler = function (req, res) {
     let name = catNames[helper.getRandomNum(0, catNames.length - 1)]
     let age = helper.getRandomNum(0, 25); // cats can live till their early 20s
     let colorArr = [];
-    
+
     /* generates 3 random colors and inserts them into colorArr 
     making sure the generated color is not already in the array */
     while (colorArr.length < 3) {
         let color = catColors[helper.getRandomNum(0, catColors.length - 1)];
-        if (colorArr.indexOf(color) == -1) colorArr.push(color);
+        if (colorArr.indexOf(color) == -1) colorArr.push(color.toLowerCase());
     }
 
-    let newCat = new Cat(name, age, colorArr)
-    db.add(newCat);
-    res.render('newCat', { cat: newCat });
+    let newCat = new Cat({
+        name: name,
+        age: age,
+        colors: colorArr
+    });
+
+    newCat.save(function (err, cat) {
+        if (err) return console.error(err);
+        res.render('newCat', {
+            cat: newCat
+        })
+    });
 }
 
 // Lists all cats in the db sorted ascending by age
 
-let listCatHandler = function(req, res) {
-    let sortedCats = helper.sortAscendingByAge(db.getAll());
-    res.render('sortCat', { cats: sortedCats });
+let listCatHandler = function (req, res) {
+    Cat
+        .find({})
+        .sort({ age: 1 })
+        .exec(function (err, result) {
+            res.render('sortCat', { cats: result });
+        });
 }
 
 // Lists all cats in the db sorted ascending by age that match a specific color passed by the user
 
-let bycolorCatHandler = function(req, res) {
-    let catsByColor = helper.sortAscendingByAge(db.getAll()).filter(function(cat) {
-        return helper.toLowerCaseArray(cat.colors).indexOf((req.params.color).toLowerCase()) != -1;
-    })
-    res.render('sortCat', { cats: catsByColor });
+let bycolorCatHandler = function (req, res) {
+    Cat
+        .find({ colors: { $in: [(req.params.color).toLowerCase()] } })
+        .sort({ age: 1 })
+        .exec(function (err, result) {
+            res.render('sortCat', { cats: result });
+        })
+
 }
 
 // Deletes oldest aged cat in the db
 
-let deleteCatHandler = function(req, res) {
-    let oldestCat = helper.sortAscendingByAge(db.getAll()).pop();
-    let oldestCatindex = db.getAll().indexOf(oldestCat)
-    db.remove(oldestCatindex)
-    res.render('killCat', { cat: oldestCat });
+let deleteCatHandler = function (req, res) {
+    Cat
+        .find({})
+        .sort({ age: -1 })
+        .limit(1)
+        .exec(function (err, result) {
+            Cat
+                .remove({ _id: result[0]._id })
+                .exec(function (err) {
+                    res.render('killCat', { cat: result[0] });
+                })
+        })
 }
 
 let requestHandlers = {
     newCat: newCatHandler,
     listCat: listCatHandler,
-    deleteCat: deleteCatHandler,
-    bycolorCat: bycolorCatHandler
+    bycolorCat: bycolorCatHandler,
+    deleteCat: deleteCatHandler
 }
 
 module.exports = requestHandlers;

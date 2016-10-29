@@ -1,2 +1,2 @@
 # losGATOS
-Simple cat node.js application with fakedb
+Simple cat node.js application on mongodb
