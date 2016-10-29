@@ -35,9 +35,7 @@ let newCatHandler = function (req, res) {
 
     newCat.save(function (err, cat) {
         if (err) return console.error(err);
-        res.render('newCat', {
-            cat: newCat
-        })
+        res.render('newCat', { cat: newCat })
     });
 }
 
@@ -61,7 +59,6 @@ let bycolorCatHandler = function (req, res) {
         .exec(function (err, result) {
             res.render('sortCat', { cats: result });
         })
-
 }
 
 // Deletes oldest aged cat in the db
