@@ -68,13 +68,12 @@ let bycolorCatHandler = function (req, res) {
 let deleteCatHandler = function (req, res) {
     Cat
         .find({})
-        .sort({ age: -1 })
-        .limit(1)
+        .sort({ age: 1 })
         .exec(function (err, result) {
             Cat
-                .remove({ _id: result[0]._id })
+                .remove({ _id: result[result.length-1]._id })
                 .exec(function (err) {
-                    res.render('killCat', { cat: result[0] });
+                    res.render('killCat', { cat: result[result.length-1] });
                 })
         })
 }
