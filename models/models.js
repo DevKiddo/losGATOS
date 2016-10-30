@@ -4,7 +4,8 @@ let mongoose = require('mongoose');
 let Cat = mongoose.Schema({
   name: String,
   age: Number,
-  colors: [String]
+  colors: [String],
+  price: Number
 });
 
 

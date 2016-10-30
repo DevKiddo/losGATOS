@@ -16,21 +16,23 @@ let Cat = models.Cat;
 // Creates new Cat in the db
 
 let newCatHandler = function (req, res) {
-    let name = catNames[helper.getRandomNum(0, catNames.length - 1)]
+    let name = catNames[helper.getRandomNum(0, catNames.length - 1)];
     let age = helper.getRandomNum(0, 25); // cats can live till their early 20s
     let colorArr = [];
+    let price = helper.getRandomNum(50, 1200);
 
     /* generates 3 random colors and inserts them into colorArr 
     making sure the generated color is not already in the array */
     while (colorArr.length < 3) {
         let color = catColors[helper.getRandomNum(0, catColors.length - 1)];
-        if (colorArr.indexOf(color) == -1) colorArr.push(color.toLowerCase());
+        if (colorArr.indexOf(color.toLocaleLowerCase()) == -1) colorArr.push(color.toLowerCase());
     }
 
     let newCat = new Cat({
         name: name,
         age: age,
-        colors: colorArr
+        colors: colorArr,
+        price: price
     });
 
     newCat.save(function (err, cat) {
@@ -77,11 +79,24 @@ let deleteCatHandler = function (req, res) {
         })
 }
 
+// Lists cats by price range passed by user
+
+let priceRangeCatHandler = function (req, res) {
+    let rangeArr = req.params.pricerange.split(',');
+    Cat
+        .find({ price: { $gte: rangeArr[0], $lte: rangeArr[1] } })
+        .sort({ age: -1 })
+        .exec(function (err, result) {
+            res.render('sortCat', { cats: result });
+        })
+}
+
 let requestHandlers = {
     newCat: newCatHandler,
     listCat: listCatHandler,
     bycolorCat: bycolorCatHandler,
-    deleteCat: deleteCatHandler
+    deleteCat: deleteCatHandler,
+    priceRangeCat: priceRangeCatHandler
 }
 
 module.exports = requestHandlers;
