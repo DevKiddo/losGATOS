@@ -8,7 +8,6 @@ let Cat = mongoose.Schema({
   price: Number
 });
 
-
 let models =  {
   Cat : mongoose.model("cat", Cat)
 }

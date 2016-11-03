@@ -1,1 +1,6 @@
+<ol>
 <h3>Poor {{cat.name}} passed away :(</h3>
+{{#each cats}}
+  <li>{{this.name}}, a {{this.colors.[0]}}, {{this.colors.[1]}}, and {{this.colors.[2]}} cat, is {{this.age}} years old. Price: ${{this.price}}</li>
+{{/each}}
+</ol>

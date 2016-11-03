@@ -23,7 +23,8 @@ app.set('view engine', 'handlebars');
 
 app.use('/', routes);
 
-mongoose.connect('mongodb://localhost/cats');
+// connect to db
+mongoose.connect('mongodb://localhost/cats/');
 
 app.listen(8080);
 console.log('Server started')

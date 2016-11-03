@@ -13,6 +13,10 @@ let catColors = catData.colors;
 
 let Cat = models.Cat;
 
+let home = function (req, res) {
+    res.render('home');
+}
+
 // Creates new Cat in the db
 
 let newCatHandler = function (req, res) {
@@ -48,7 +52,11 @@ let listCatHandler = function (req, res) {
         .find({})
         .sort({ age: 1 })
         .exec(function (err, result) {
-            res.render('sortCat', { cats: result });
+            if (result.length !== 0) {
+                res.render('sortCat', { cats: result });
+            } else {
+                res.send('<h3>No cats left!</h3>')
+            }
         });
 }
 
@@ -59,7 +67,11 @@ let bycolorCatHandler = function (req, res) {
         .find({ colors: { $in: [(req.params.color).toLowerCase()] } })
         .sort({ age: 1 })
         .exec(function (err, result) {
-            res.render('sortCat', { cats: result });
+            if (result.length !== 0) {
+                res.render('sortCat', { cats: result });
+            } else {
+                res.send('<h3>No cats left!</h3>')
+            }
         })
 }
 
@@ -70,11 +82,18 @@ let deleteCatHandler = function (req, res) {
         .find({})
         .sort({ age: 1 })
         .exec(function (err, result) {
-            Cat
-                .remove({ _id: result[result.length-1]._id })
-                .exec(function (err) {
-                    res.render('killCat', { cat: result[result.length-1] });
-                })
+            if (result.length !== 0) {
+                Cat
+                    .remove({ _id: result[result.length - 1]._id })
+                    .exec(function (err) {
+                        res.render('killCat', {
+                            cat: result[result.length - 1],
+                            cats: result.slice(0, result.length - 1)
+                        });
+                    })
+            } else {
+                res.send('<h3>No cats left!</h3>')
+            }
         })
 }
 
@@ -84,13 +103,18 @@ let priceRangeCatHandler = function (req, res) {
     let rangeArr = req.params.pricerange.split(',');
     Cat
         .find({ price: { $gte: rangeArr[0], $lte: rangeArr[1] } })
-        .sort({ age: -1 })
+        .sort({ age: 1 })
         .exec(function (err, result) {
-            res.render('sortCat', { cats: result });
+             if (result.length !== 0) {
+                res.render('sortCat', { cats: result });
+            } else {
+                res.send('<h3>No cats left!</h3>')
+            }
         })
 }
 
 let requestHandlers = {
+    home: home,
     newCat: newCatHandler,
     listCat: listCatHandler,
     bycolorCat: bycolorCatHandler,
